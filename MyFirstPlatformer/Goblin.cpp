@@ -82,12 +82,6 @@ void Goblin::Update(float time) {
 			sprite.setTextureRect(IntRect(150 * int(currentFrame) + 150, 0, -150, 150));
 	}
 
-	/*if (rect.top >= ground) {
-		rect.top = ground;
-		dy = 0;
-		onGround = true;
-	}*/
-
 	if (!onGround) {
 		dy = dy + 0.0005 * time;
 	}

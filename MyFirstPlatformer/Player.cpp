@@ -18,26 +18,6 @@ Player::Player() {
 	anim.push_back(texture);
 }
 
-/*void Player::Collision(int dir) {
-	for (int i = rect.top / 32; i < (rect.top + rect.height) / 32; i++)
-		for (int j = rect.left / 32; j < (rect.left + rect.width) / 32; j++)
-			if (TileMap[i][j] == 'B') {
-				if (dx > 0 && dir == 0)
-					rect.left = j * 32 - rect.width;
-				if (dx < 0 && dir == 0)
-					rect.left = j * 32 + 32;
-				if (dy > 0 && dir == 0) {
-					rect.top = i * 32 - rect.height;
-					dy = 0;
-					onGround = true;
-				}
-				if (dy < 0 && dir == 0) {
-					rect.top = i * 32 + 32;
-					dy = 0;
-				}
-			}
-}*/
-
 void Player::Move() {
 	if (Keyboard::isKeyPressed(Keyboard::Left)) {
 		dx = -0.2;
@@ -144,12 +124,6 @@ void Player::Update(float time) {
 		else if (left == true)
 			sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
 	}
-
-	/*if (rect.top + rect.height >= ground) {
-		rect.top = ground - rect.height;
-		dy = 0;
-		onGround = true;
-	}*/
 
 	if (!onGround) {
 		if (dy < 0) {
