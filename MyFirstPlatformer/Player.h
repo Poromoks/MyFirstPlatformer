@@ -7,15 +7,16 @@ using namespace sf;
 class Player {
 public:
 	Player();
-	void Move();
-	void Update(float time);
-	/*void Collision(int dir); */
+	virtual void Move();
+	virtual void Move(Event& event, Clock& playerAttackClock);
+	virtual void Update(float time);
+	void Collision(int num);
 	Sprite sprite;
 	FloatRect rect;
 	bool isAttacking = false;
 
-	float dx = 0.1, dy = 0.1, currentFrame = 0, attackFrame = 0, ground = 400;
-	bool onGround = false, left = false;
+	float dx = 0, dy = 0, currentFrame = 0, attackFrame = 0;
+	bool onGround = false, left = false, firstAttack = true;
 
 private:
 	std::vector <Texture> anim;

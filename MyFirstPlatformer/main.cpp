@@ -1,8 +1,6 @@
 #include "SFML/Audio.hpp"
 #include "Goblin.h"
 
-#include <iostream>
-
 using namespace sf;
 
 int main() {
@@ -10,12 +8,14 @@ int main() {
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
     
-    Player player;
-    Goblin goblin;
-    RectangleShape rectangle(Vector2f(32, 32));
+    std::vector <Player*> players;
+    players.push_back(new Player);
+    players.push_back(new Goblin);
+
     Clock clock;
-    Clock playerAttackClock;
-    Clock goblinAttackClock;
+    Clock AttackClock;
+
+    RectangleShape rectangle(Vector2f(32, 32));
 
     while (window.isOpen())  {
 
@@ -24,8 +24,9 @@ int main() {
 
         time = time / 800;
 
-        player.Update(time);
-        goblin.Update(time);
+        for (auto& player : players) {
+            player->Update(time);
+        }
 
         Event event;
         while (window.pollEvent(event)) {
@@ -34,18 +35,8 @@ int main() {
             if (event.type == Event::Closed)
                 window.close();
 
-            if (event.type == Event::KeyReleased) {
-                if (event.key.code == Keyboard::Z) {
-                    playerAttackClock.restart();
-                    player.isAttacking = true;
-                }
-            }
-
-            if (event.type == Event::KeyReleased) {
-                if (event.key.code == Keyboard::X) {
-                    goblinAttackClock.restart();
-                    goblin.isAttacking = true;
-                }
+            for (const auto& player : players) {
+                player->Move(event, AttackClock);
             }
         }
 
@@ -57,16 +48,12 @@ int main() {
                     rectangle.setFillColor(Color::Red);
                     rectangle.setPosition(j * 32, i * 32);
                     window.draw(rectangle);
-
-                    if (player.rect.intersects(rectangle.getGlobalBounds()))
-                        std::cout << "dd";
                 }
             }
 
-
-
-        window.draw(player.sprite);
-        window.draw(goblin.sprite);
+        for (auto& player : players) {
+            window.draw(player->sprite);
+        }
 
         window.display();
     }

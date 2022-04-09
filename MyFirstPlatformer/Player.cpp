@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player() {
-	rect = FloatRect(75, 70, 40, 55);
+	rect = FloatRect(75, 70, 40, 53);
 
 	Texture texture;
 	texture.loadFromFile("textures/Martial Hero/Sprites/Run.png");
@@ -57,21 +57,68 @@ void Player::Move() {
 	}
 }
 
+void Player::Move(Event& event, Clock& playerAttackClock) {
+	if (event.type == Event::KeyReleased) {
+		if (event.key.code == Keyboard::Z) {
+			playerAttackClock.restart();
+			isAttacking = true;
+		}
+	}
+}
+
+void Player::Collision(int num) {
+
+	for (int i = rect.top / 32; i < (rect.top + rect.height) / 32; i++)
+		for (int j = rect.left / 32; j < (rect.left + rect.width) / 32; j++) {
+			if (TileMap[i][j] == 'B') {
+				if (dy > 0 && num == 1) {
+					rect.top = i * 32 - rect.height;
+					dy = 0;
+					onGround = true;
+				}
+				if (dy < 0 && num == 1) {
+					rect.top = i * 32 + 32;
+					dy = 0;
+				}
+				if (dx > 0 && num == 0) {
+					rect.left = j * 32 - rect.width;
+				}
+				if (dx < 0 && num == 0) {
+					rect.left = j * 32 + 32;
+				}
+			}
+		}
+
+}
+
 void Player::Update(float time) {
 	Move();
 	rect.left += dx * time;
-	/*Collision(0);*/
+	Collision(0);
 	rect.top += dy * time;
-	/*Collision(1);*/
+	onGround = false;
+	Collision(1);
 	currentFrame += 0.005 * time;
 
 	if (isAttacking && onGround) {
-		attackFrame += 0.005 * time;
-		sprite.setTexture(anim[anim::attack1]);
-		if (attackFrame > 6) {
-			attackFrame = 0;
-			isAttacking = false;
+		attackFrame += 0.03 * time;
+		if (firstAttack) {
+			sprite.setTexture(anim[anim::attack1]);
+			if (attackFrame > 6) {
+				attackFrame = 0;
+				firstAttack = false;
+			}
 		}
+
+		if (!firstAttack) {
+			sprite.setTexture(anim[anim::attack2]);
+			if (attackFrame > 6) {
+				attackFrame = 0;
+				isAttacking = false;
+				firstAttack = true;
+			}
+		}
+
 		if (left == false)
 		sprite.setTextureRect(IntRect(200 * int(attackFrame), 0, 200, 200));
 		else if (left == true)
@@ -98,11 +145,11 @@ void Player::Update(float time) {
 			sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
 	}
 
-	if (rect.top + rect.height >= ground) {
+	/*if (rect.top + rect.height >= ground) {
 		rect.top = ground - rect.height;
 		dy = 0;
 		onGround = true;
-	}
+	}*/
 
 	if (!onGround) {
 		if (dy < 0) {
@@ -127,9 +174,8 @@ void Player::Update(float time) {
 					sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
 			}
 		}
-		dy = dy + 0.0005 * time;
+		dy += 0.0005 * time;
 	}
-
 	sprite.setPosition(rect.left - 75, rect.top - 70);
 	dx = 0;
 }

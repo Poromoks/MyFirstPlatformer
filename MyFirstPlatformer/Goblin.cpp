@@ -1,7 +1,7 @@
 #include "Goblin.h"
 
 Goblin::Goblin() {
-	rect = FloatRect(0, 0, 150, 150);
+	rect = FloatRect(55, 65, 35, 36);
 
 	Texture texture;
 	texture.loadFromFile("textures/Monsters_Creatures_Fantasy/Goblin/Run.png");
@@ -31,14 +31,26 @@ void Goblin::Move() {
 	}
 }
 
+void Goblin::Move(Event& event, Clock& goblinAttackClock) {
+	if (event.type == Event::KeyReleased) {
+		if (event.key.code == Keyboard::X) {
+			goblinAttackClock.restart();
+			isAttacking = true;
+		}
+	}
+}
+
 void Goblin::Update(float time) {
 	Move();
 	rect.left += dx * time;
+	Collision(0);
 	rect.top += dy * time;
+	onGround = false;
+	Collision(1);
 	currentFrame += 0.005 * time;
 
 	if (isAttacking && onGround) {
-		attackFrame += 0.005 * time;
+		attackFrame += 0.03 * time;
 		sprite.setTexture(anim[anim::attack1]);
 		if (attackFrame > 8) {
 			attackFrame = 0;
@@ -70,16 +82,16 @@ void Goblin::Update(float time) {
 			sprite.setTextureRect(IntRect(150 * int(currentFrame) + 150, 0, -150, 150));
 	}
 
-	if (rect.top >= ground) {
+	/*if (rect.top >= ground) {
 		rect.top = ground;
 		dy = 0;
 		onGround = true;
-	}
+	}*/
 
 	if (!onGround) {
 		dy = dy + 0.0005 * time;
 	}
 
-	sprite.setPosition(rect.left, rect.top);
+	sprite.setPosition(rect.left - 55, rect.top - 65);
 	dx = 0;
 }

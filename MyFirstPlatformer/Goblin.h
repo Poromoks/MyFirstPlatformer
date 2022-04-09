@@ -6,11 +6,9 @@ using namespace sf;
 class Goblin : public Player {
 public:
 	Goblin();
-	void Update(float time);
-	void Move();
-
-protected:
-	float ground = 420;
+	void Move() override;
+	void Move(Event& event, Clock& goblinAttackClock) override;
+	void Update(float time) override;
 
 private:
 	std::vector <Texture> anim;
