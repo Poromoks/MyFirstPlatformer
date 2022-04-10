@@ -2,8 +2,10 @@
 
 Player::Player() {
 	rect = FloatRect(75, 70, 40, 53);
+	step = 200;
+	x = rect.left;
+	y = rect.top;
 
-	Texture texture;
 	texture.loadFromFile("textures/Martial Hero/Sprites/Run.png");
 	anim.push_back(texture);
 	texture.loadFromFile("textures/Martial Hero/Sprites/Jump.png");
@@ -46,31 +48,6 @@ void Player::Move(Event& event, Clock& playerAttackClock) {
 	}
 }
 
-void Player::Collision(int num) {
-
-	for (int i = rect.top / 32; i < (rect.top + rect.height) / 32; i++)
-		for (int j = rect.left / 32; j < (rect.left + rect.width) / 32; j++) {
-			if (TileMap[i][j] == 'B') {
-				if (dy > 0 && num == 1) {
-					rect.top = i * 32 - rect.height;
-					dy = 0;
-					onGround = true;
-				}
-				if (dy < 0 && num == 1) {
-					rect.top = i * 32 + 32;
-					dy = 0;
-				}
-				if (dx > 0 && num == 0) {
-					rect.left = j * 32 - rect.width;
-				}
-				if (dx < 0 && num == 0) {
-					rect.left = j * 32 + 32;
-				}
-			}
-		}
-
-}
-
 void Player::Update(float time) {
 	Move();
 	rect.left += dx * time;
@@ -89,7 +66,6 @@ void Player::Update(float time) {
 				firstAttack = false;
 			}
 		}
-
 		if (!firstAttack) {
 			sprite.setTexture(anim[anim::attack2]);
 			if (attackFrame > 6) {
@@ -98,31 +74,21 @@ void Player::Update(float time) {
 				firstAttack = true;
 			}
 		}
-
-		if (left == false)
-		sprite.setTextureRect(IntRect(200 * int(attackFrame), 0, 200, 200));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(200 * int(attackFrame) + 200, 0, -200, 200));
+		Animation(attackFrame);
 	}
 
 	if (dx == 0 && dy == 0 && !isAttacking) {
 		sprite.setTexture(anim[anim::idle]);
 		if (currentFrame > 8)
 			currentFrame = 0;
-		if (left == false)
-		sprite.setTextureRect(IntRect(200 * int(currentFrame), 0, 200, 200));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
+		Animation(currentFrame);
 	}
 
 	if (dx > 0 || dx < 0) {
 		sprite.setTexture(anim[anim::run]);
 		if (currentFrame > 8)
 			currentFrame = 0;
-		if (left == false)
-		sprite.setTextureRect(IntRect(200 * int(currentFrame), 0, 200, 200));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
+		Animation(currentFrame);
 	}
 
 	if (!onGround) {
@@ -131,10 +97,7 @@ void Player::Update(float time) {
 			if (dx > 0 || dx < 0 || dx == 0) {
 				if (currentFrame > 2)
 					currentFrame = 0;
-				if (left == false)
-					sprite.setTextureRect(IntRect(200 * int(currentFrame), 0, 200, 200));
-				else if (left == true)
-					sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
+				Animation(currentFrame);
 			}
 		}
 		else if (dy > 0) {
@@ -142,14 +105,11 @@ void Player::Update(float time) {
 			if (dx > 0 || dx < 0 || dx == 0) {
 				if (currentFrame > 2)
 					currentFrame = 0;
-				if (left == false)
-					sprite.setTextureRect(IntRect(200 * int(currentFrame), 0, 200, 200));
-				else if (left == true)
-					sprite.setTextureRect(IntRect(200 * int(currentFrame) + 200, 0, -200, 200));
+				Animation(currentFrame);
 			}
 		}
 		dy += 0.0005 * time;
 	}
-	sprite.setPosition(rect.left - 75, rect.top - 70);
+	sprite.setPosition(rect.left - x, rect.top - y);
 	dx = 0;
 }

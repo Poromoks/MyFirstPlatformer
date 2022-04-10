@@ -2,13 +2,17 @@
 
 Goblin::Goblin() {
 	rect = FloatRect(55, 65, 35, 36);
+	step = 150;
+	x = rect.left;
+	y = rect.top;
 
-	Texture texture;
 	texture.loadFromFile("textures/Monsters_Creatures_Fantasy/Goblin/Run.png");
 	anim.push_back(texture);
 	texture.loadFromFile("textures/Monsters_Creatures_Fantasy/Goblin/Idle.png");
 	anim.push_back(texture);
 	texture.loadFromFile("textures/Monsters_Creatures_Fantasy/Goblin/Attack.png");
+	anim.push_back(texture);
+	texture.loadFromFile("textures/Monsters_Creatures_Fantasy/Goblin/Attack2.png");
 	anim.push_back(texture);
 }
 
@@ -51,41 +55,42 @@ void Goblin::Update(float time) {
 
 	if (isAttacking && onGround) {
 		attackFrame += 0.03 * time;
-		sprite.setTexture(anim[anim::attack1]);
-		if (attackFrame > 8) {
-			attackFrame = 0;
-			isAttacking = false;
+		if (firstAttack) {
+			sprite.setTexture(anim[anim::attack1]);
+			if (attackFrame > 8) {
+				attackFrame = 0;
+				firstAttack = false;
+			}
 		}
-		if (left == false)
-			sprite.setTextureRect(IntRect(150 * int(attackFrame), 0, 150, 150));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(150 * int(attackFrame) + 150, 0, -150, 150));
+		if (!firstAttack) {
+			sprite.setTexture(anim[anim::attack2]);
+			if (attackFrame > 8) {
+				attackFrame = 0;
+				isAttacking = false;
+				firstAttack = true;
+			}
+		}
+		Animation(attackFrame);
 	}
 
 	if (dx == 0 && dy == 0 && !isAttacking) {
 		sprite.setTexture(anim[anim::idle]);
 		if (currentFrame > 4)
 			currentFrame = 0;
-		if (left == false)
-			sprite.setTextureRect(IntRect(150 * int(currentFrame), 0, 150, 150));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(150 * int(currentFrame) + 150, 0, -150, 150));
+		Animation(currentFrame);
 	}
 
 	if (dx > 0 || dx < 0) {
 		sprite.setTexture(anim[anim::run]);
 		if (currentFrame > 8)
 			currentFrame = 0;
-		if (left == false)
-			sprite.setTextureRect(IntRect(150 * int(currentFrame), 0, 150, 150));
-		else if (left == true)
-			sprite.setTextureRect(IntRect(150 * int(currentFrame) + 150, 0, -150, 150));
+		Animation(currentFrame);
 	}
 
 	if (!onGround) {
 		dy = dy + 0.0005 * time;
 	}
 
-	sprite.setPosition(rect.left - 55, rect.top - 65);
+	sprite.setPosition(rect.left - x, rect.top - y);
 	dx = 0;
 }

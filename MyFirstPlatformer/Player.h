@@ -1,22 +1,14 @@
 #pragma once
-#include "SFML/Graphics.hpp"
-#include "Map.h"
+#include "Entity.h"
 
 using namespace sf;
 
-class Player {
+class Player : public Entity {
 public:
 	Player();
 	virtual void Move();
 	virtual void Move(Event& event, Clock& playerAttackClock);
 	virtual void Update(float time);
-	void Collision(int num);
-	Sprite sprite;
-	FloatRect rect;
-	bool isAttacking = false;
-
-	float dx = 0, dy = 0, currentFrame = 0, attackFrame = 0;
-	bool onGround = false, left = false, firstAttack = true;
 
 private:
 	std::vector <Texture> anim;
