@@ -58,6 +58,11 @@ void Player::Update(float time) {
 	currentFrame += 0.005 * time;
 
 	if (isAttacking && onGround) {
+		if (dx != 0 || dy != 0) {
+			attackFrame = 0;
+			isAttacking = false;
+			sprite.setTexture(anim[anim::attack1]);
+		}
 		attackFrame += 0.03 * time;
 		if (firstAttack) {
 			sprite.setTexture(anim[anim::attack1]);
