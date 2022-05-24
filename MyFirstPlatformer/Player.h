@@ -6,6 +6,8 @@ using namespace sf;
 class Player : public Entity {
 public:
 	Player();
+	void Animation(float& currentFrame) override;
+	void Collision(int num) override;
 	virtual void Move();
 	virtual void Move(Event& event, Clock& playerAttackClock);
 	virtual void Update(float time);

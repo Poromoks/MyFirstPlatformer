@@ -15,6 +15,18 @@ int main() {
     Clock clock;
     Clock AttackClock;
 
+    Texture background;
+    background.loadFromFile("textures/oak_woods_v1.0/background/background_layer_1.png");
+    Sprite backgroundSprite;
+    backgroundSprite.setTexture(background);
+    backgroundSprite.setScale(4, 4);
+
+    Texture tiles;
+    tiles.loadFromFile("textures/oak_woods_v1.0/oak_woods_tileset.png");
+    Sprite tile;
+    tile.setTexture(tiles);
+
+
     RectangleShape rectangle(Vector2f(32, 32));
 
     while (window.isOpen())  {
@@ -41,14 +53,24 @@ int main() {
         }
 
         window.clear(Color::Black);
+        window.draw(backgroundSprite);
 
         for (int i = 0; i < H; i++)
             for (int j = 0; j < W; j++) {
-                if (TileMap[i][j] == 'B') {
-                    rectangle.setFillColor(Color::Red);
-                    rectangle.setPosition(j * 32, i * 32);
+                rectangle.setTexture(&tiles);
+                rectangle.setPosition(j * 32, i * 32);
+                if (TileMap[i][j] == 'B')
+                    rectangle.setTextureRect(IntRect(120, 216, 23, 23));
+                else if (TileMap[i][j] == 'A')
+                    rectangle.setTextureRect(IntRect(0, 23, 23, 23));
+                else if (TileMap[i][j] == 'D')
+                    rectangle.setTextureRect(IntRect(72, 23, 23, 23));
+                else if (TileMap[i][j] == 'Q')
+                    rectangle.setTextureRect(IntRect(0, 0, 23, 23));
+                else if (TileMap[i][j] == 'E')
+                    rectangle.setTextureRect(IntRect(72, 0, 23, 23));
+                if (TileMap[i][j] != ' ')
                     window.draw(rectangle);
-                }
             }
 
         for (auto& player : players) {
